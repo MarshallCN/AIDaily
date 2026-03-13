@@ -2,7 +2,7 @@ title: AI Daily
 description: 每日 AI 新闻静态站点，基于 Jekyll，可直接部署到 GitHub Pages。
 lang: zh-CN
 url: ""
-baseurl: ""
+baseurl: "/AIDaily"
 repository_url: "https://github.com/"
 markdown: kramdown
 highlighter: rouge
