@@ -1,0 +1,14 @@
+title: AI Daily
+description: 每日 AI 新闻静态站点，基于 Jekyll，可直接部署到 GitHub Pages。
+lang: zh-CN
+url: ""
+baseurl: ""
+repository_url: "https://github.com/"
+markdown: kramdown
+highlighter: rouge
+permalink: /news/:year/:month/:day/:title/
+timezone: Europe/London
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock

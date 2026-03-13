@@ -1,0 +1,27 @@
+---
+layout: default
+---
+<article class="post-page panel glass">
+  <div class="post-page__meta">
+    <a class="inline-link" href="{{ '/' | relative_url }}">返回首页</a>
+    <span>{{ page.date | date: "%Y年%m月%d日" }}</span>
+  </div>
+
+  <h1 class="post-page__title">{{ page.title }}</h1>
+
+  {% if page.summary %}
+  <p class="post-page__summary">{{ page.summary }}</p>
+  {% endif %}
+
+  {% if page.tags %}
+  <div class="tag-cloud">
+    {% for tag in page.tags %}
+    <span>{{ tag }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="markdown-body post-page__content">
+    {{ content }}
+  </div>
+</article>

@@ -1,0 +1,132 @@
+---
+layout: default
+title: AI Daily
+description: 每日 AI 新闻时间线，支持 GitHub Pages 静态部署与 Markdown 内容管理。
+---
+{% assign latest = site.posts.first %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">AI DAILY / 每日情报流</p>
+    <h1>把每天的 AI 新闻，整理成一条持续生长的时间线。</h1>
+    <p class="hero-text">
+      每天一篇 Markdown，首页自动汇总，支持动态切换阅读、关键词筛选和独立文章页。
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat__value">{{ site.posts | size }}</span>
+        <span class="hero-stat__label">已收录日报</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat__value">
+          {% if latest %}{{ latest.date | date: "%Y-%m-%d" }}{% else %}--{% endif %}
+        </span>
+        <span class="hero-stat__label">最近更新</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual glass">
+    <canvas id="signal-canvas" class="signal-canvas" aria-hidden="true"></canvas>
+    <div class="hero-chip hero-chip--1">Markdown 驱动</div>
+    <div class="hero-chip hero-chip--2">GitHub Pages</div>
+    <div class="hero-chip hero-chip--3">JS 动画</div>
+    <div class="hero-rings" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</section>
+
+<main class="dashboard">
+  <aside class="panel glass">
+    <div class="panel-head">
+      <div>
+        <p class="panel-eyebrow">NEWS INDEX</p>
+        <h2>日报列表</h2>
+      </div>
+      <label class="search">
+        <span class="visually-hidden">搜索日报</span>
+        <input id="search-input" type="search" placeholder="按标题、摘要或标签筛选" />
+      </label>
+    </div>
+
+    <div id="news-list" class="news-list">
+      {% for post in site.posts %}
+      {% assign summary_text = post.summary | default: post.excerpt | strip_html | strip_newlines %}
+      <a
+        class="news-card{% if forloop.first %} is-active{% endif %}"
+        href="{{ post.url | relative_url }}"
+        data-slug="{{ post.slug }}"
+        data-search="{{ post.title }} {{ summary_text }} {{ post.tags | join: ' ' }}"
+      >
+        <span class="news-card__date">{{ post.date | date: "%Y-%m-%d" }}</span>
+        <strong class="news-card__title">{{ post.title }}</strong>
+        <span class="news-card__summary">{{ summary_text }}</span>
+        {% if post.tags %}
+        <span class="news-card__tags">
+          {% for tag in post.tags limit: 3 %}
+          <span>{{ tag }}</span>
+          {% endfor %}
+        </span>
+        {% endif %}
+      </a>
+      {% endfor %}
+    </div>
+
+    <div id="search-empty" class="empty-state" hidden>
+      没有匹配的日报，换个关键词试试。
+    </div>
+  </aside>
+
+  <section class="panel glass reader">
+    {% if latest %}
+    <div class="reader-head">
+      <div class="reader-meta">
+        <span id="article-date">{{ latest.date | date: "%Y年%m月%d日" }}</span>
+        <div id="article-tags" class="tag-cloud">
+          {% if latest.tags %}
+          {% for tag in latest.tags %}
+          <span>{{ tag }}</span>
+          {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="reader-actions">
+        <a id="article-link" class="inline-link" href="{{ latest.url | relative_url }}">打开独立页面</a>
+      </div>
+    </div>
+
+    <h2 id="article-title" class="reader-title">{{ latest.title }}</h2>
+    <p id="article-summary" class="reader-summary">
+      {{ latest.summary | default: latest.excerpt | strip_html | strip_newlines }}
+    </p>
+    <article id="article-content" class="markdown-body">
+      {{ latest.content }}
+    </article>
+    {% else %}
+    <div class="empty-state empty-state--reader">
+      还没有日报内容。先在 <code>_posts/</code> 里新增一篇 Markdown 文件。
+    </div>
+    {% endif %}
+  </section>
+</main>
+
+<script id="news-data" type="application/json">
+[
+{% for post in site.posts %}
+{% assign summary_text = post.summary | default: post.excerpt | strip_html | strip_newlines %}
+  {
+    "slug": {{ post.slug | jsonify | replace: '</', '<\/' }},
+    "title": {{ post.title | jsonify | replace: '</', '<\/' }},
+    "date": {{ post.date | date: "%Y-%m-%d" | jsonify }},
+    "dateLabel": {{ post.date | date: "%Y年%m月%d日" | jsonify }},
+    "summary": {{ summary_text | jsonify | replace: '</', '<\/' }},
+    "tags": {{ post.tags | jsonify }},
+    "url": {{ post.url | relative_url | jsonify }},
+    "html": {{ post.content | jsonify | replace: '</', '<\/' }}
+  }{% unless forloop.last %},{% endunless %}
+{% endfor %}
+]
+</script>

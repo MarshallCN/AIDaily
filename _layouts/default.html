@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="{{ site.lang | default: 'zh-CN' }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      {% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}
+    </title>
+    <meta name="description" content="{{ page.description | default: site.description }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}" />
+  </head>
+  <body class="layout-{{ page.layout | default: 'default' }}">
+    <div class="site-shell">
+      <div class="site-blur site-blur--left" aria-hidden="true"></div>
+      <div class="site-blur site-blur--right" aria-hidden="true"></div>
+
+      <header class="site-header">
+        <a class="brand" href="{{ '/' | relative_url }}">
+          <span class="brand-mark">AI</span>
+          <span class="brand-copy">
+            <strong>{{ site.title }}</strong>
+            <small>Daily AI news archive</small>
+          </span>
+        </a>
+
+        <nav class="top-nav" aria-label="主导航">
+          <a href="{{ '/' | relative_url }}">首页</a>
+          <a href="{{ site.repository_url | default: 'https://github.com/' }}" target="_blank" rel="noreferrer">
+            GitHub
+          </a>
+        </nav>
+      </header>
+
+      {{ content }}
+    </div>
+
+    <script src="{{ '/assets/js/app.js' | relative_url }}"></script>
+  </body>
+</html>
