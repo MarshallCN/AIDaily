@@ -24,4 +24,17 @@ layout: default
   <div class="markdown-body post-page__content">
     {{ content }}
   </div>
+
+  {% if page.sources %}
+  <section class="reader-sources">
+    <p class="panel-eyebrow">Sources</p>
+    <div class="source-list">
+      {% for source in page.sources %}
+      <a class="source-link" href="{{ source.url }}" target="_blank" rel="noreferrer">
+        {{ source.label }}
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
 </article>

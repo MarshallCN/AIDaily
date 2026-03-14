@@ -1,20 +1,21 @@
 ---
 layout: default
 title: AI Daily
-description: 每日 AI 新闻时间线，支持 GitHub Pages 静态部署与 Markdown 内容管理。
+description: 追踪最近 AI infra、AI 应用、AI 技术与行业动态的中文日报，支持 GitHub Pages 静态部署与 Markdown 内容管理。
 ---
 {% assign latest = site.posts.first %}
+{% assign hero_posts = site.posts | slice: 0, 3 %}
 <section class="hero">
   <div class="hero-copy">
-    <p class="eyebrow">AI DAILY / 每日情报流</p>
-    <h1>把每天的 AI 新闻，整理成一条持续生长的时间线。</h1>
+    <p class="eyebrow">AI DAILY / VERIFIED SIGNALS</p>
+    <h1>把最近的 AI 新闻，整理成一条持续生长的时间线。</h1>
     <p class="hero-text">
-      每天一篇 Markdown，首页自动汇总，支持动态切换阅读、关键词筛选和独立文章页。
+      聚焦 AI Infra、AI 应用、AI 技术与行业动态。每篇日报都保留摘要、关键词和官方来源，继续走 GitHub Pages 友好的静态发布方式。
     </p>
     <div class="hero-stats">
       <div class="hero-stat">
         <span class="hero-stat__value">{{ site.posts | size }}</span>
-        <span class="hero-stat__label">已收录日报</span>
+        <span class="hero-stat__label">已上线日报</span>
       </div>
       <div class="hero-stat">
         <span class="hero-stat__value">
@@ -27,9 +28,15 @@ description: 每日 AI 新闻时间线，支持 GitHub Pages 静态部署与 Mar
 
   <div class="hero-visual glass">
     <canvas id="signal-canvas" class="signal-canvas" aria-hidden="true"></canvas>
-    <div class="hero-chip hero-chip--1">Markdown 驱动</div>
-    <div class="hero-chip hero-chip--2">GitHub Pages</div>
-    <div class="hero-chip hero-chip--3">JS 动画</div>
+    {% for post in hero_posts %}
+    {% assign chip_label = "" %}
+    {% if post.signals and post.signals.size > 0 %}
+    {% assign chip_label = post.signals | first %}
+    {% elsif post.tags and post.tags.size > 0 %}
+    {% assign chip_label = post.tags | first %}
+    {% endif %}
+    <div class="hero-chip hero-chip--{{ forloop.index }}">{{ chip_label }}</div>
+    {% endfor %}
     <div class="hero-rings" aria-hidden="true">
       <span></span>
       <span></span>
@@ -39,7 +46,7 @@ description: 每日 AI 新闻时间线，支持 GitHub Pages 静态部署与 Mar
 </section>
 
 <main class="dashboard">
-  <aside class="panel glass">
+  <aside class="panel panel--index glass">
     <div class="panel-head">
       <div>
         <p class="panel-eyebrow">NEWS INDEX</p>
@@ -58,7 +65,7 @@ description: 每日 AI 新闻时间线，支持 GitHub Pages 静态部署与 Mar
         class="news-card{% if forloop.first %} is-active{% endif %}"
         href="{{ post.url | relative_url }}"
         data-slug="{{ post.slug }}"
-        data-search="{{ post.title }} {{ summary_text }} {{ post.tags | join: ' ' }}"
+        data-search="{{ post.title }} {{ summary_text }} {{ post.tags | join: ' ' }} {{ post.signals | join: ' ' }}"
       >
         <span class="news-card__date">{{ post.date | date: "%Y-%m-%d" }}</span>
         <strong class="news-card__title">{{ post.title }}</strong>
@@ -105,6 +112,18 @@ description: 每日 AI 新闻时间线，支持 GitHub Pages 静态部署与 Mar
     <article id="article-content" class="markdown-body">
       {{ latest.content }}
     </article>
+    <section class="reader-sources">
+      <p class="panel-eyebrow">Sources</p>
+      <div id="article-sources" class="source-list">
+        {% if latest.sources %}
+        {% for source in latest.sources %}
+        <a class="source-link" href="{{ source.url }}" target="_blank" rel="noreferrer">
+          {{ source.label }}
+        </a>
+        {% endfor %}
+        {% endif %}
+      </div>
+    </section>
     {% else %}
     <div class="empty-state empty-state--reader">
       还没有日报内容。先在 <code>_posts/</code> 里新增一篇 Markdown 文件。
@@ -123,7 +142,9 @@ description: 每日 AI 新闻时间线，支持 GitHub Pages 静态部署与 Mar
     "date": {{ post.date | date: "%Y-%m-%d" | jsonify }},
     "dateLabel": {{ post.date | date: "%Y年%m月%d日" | jsonify }},
     "summary": {{ summary_text | jsonify | replace: '</', '<\/' }},
+    "signals": {{ post.signals | jsonify }},
     "tags": {{ post.tags | jsonify }},
+    "sources": {{ post.sources | jsonify }},
     "url": {{ post.url | relative_url | jsonify }},
     "html": {{ post.content | jsonify | replace: '</', '<\/' }}
   }{% unless forloop.last %},{% endunless %}

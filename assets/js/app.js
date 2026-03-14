@@ -31,6 +31,7 @@
     var articleTitle = document.getElementById("article-title");
     var articleSummary = document.getElementById("article-summary");
     var articleContent = document.getElementById("article-content");
+    var articleSources = document.getElementById("article-sources");
     var articleLink = document.getElementById("article-link");
     var bySlug = new Map();
     var activeSlug = null;
@@ -83,7 +84,15 @@
           post.title,
           post.summary,
           post.date,
+          Array.isArray(post.signals) ? post.signals.join(" ") : "",
           Array.isArray(post.tags) ? post.tags.join(" ") : "",
+          Array.isArray(post.sources)
+            ? post.sources
+                .map(function (source) {
+                  return source && source.label ? source.label : "";
+                })
+                .join(" ")
+            : "",
           card.dataset.search || ""
         ]
           .join(" ")
@@ -186,6 +195,7 @@
         });
       }
 
+      renderSources(post.sources || []);
       articleContent.innerHTML = post.html || "";
       animateArticle(articleContent);
     }
@@ -207,6 +217,8 @@
         articleTags.innerHTML = "";
       }
 
+      renderSources([]);
+
       if (articleLink) {
         articleLink.removeAttribute("href");
       }
@@ -222,6 +234,28 @@
 
       blocks.forEach(function (block, index) {
         block.style.setProperty("--delay", Math.min(index * 55, 385) + "ms");
+      });
+    }
+
+    function renderSources(sources) {
+      if (!articleSources) {
+        return;
+      }
+
+      articleSources.innerHTML = "";
+
+      sources.forEach(function (source) {
+        if (!source || !source.url) {
+          return;
+        }
+
+        var link = document.createElement("a");
+        link.className = "source-link";
+        link.href = source.url;
+        link.target = "_blank";
+        link.rel = "noreferrer";
+        link.textContent = source.label || source.url;
+        articleSources.appendChild(link);
       });
     }
   }
